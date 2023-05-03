@@ -1,0 +1,41 @@
+label {
+    display: block;
+    color: lightblue;
+}
+
+.buttons {
+    display: block;
+    margin: 10px;
+    
+}
+
+.container{
+    color: white;
+
+}
+
+.search-box{
+    color: white;
+    border-radius: 20px;
+    background-color: rgba(140, 140, 140, 0.35);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    width: 36%;
+}
+
+.table-row-even {
+    background-color: #f2f2f2;
+  }
+  
+.table-row-odd {
+    background-color: #ffffff;
+  }
+
+.mat-mdc-tab-group.mat-background-accent, .mat-mdc-tab-nav-bar.mat-background-accent {
+    --mat-mdc-tab-header-with-background-background-color: rgb(81, 170, 140);
+    --mat-mdc-tab-header-with-background-foreground-color: #fff;
+}
+
+h5 {
+    color: rgb(81, 170, 140);
+}

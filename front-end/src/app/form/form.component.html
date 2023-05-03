@@ -1,0 +1,145 @@
+<script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.1.0/bootstrap.min.js"></script>
+
+<html>
+    <div class="container d-flex justify-content-end">
+        <div class="btn-toolbar" role = "toolbar">
+            <div>
+                <button type="button" class="btn btn-transparent text-white btn-lg" aria-pressed="true">Search</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-transparent text-white btn-lg" aria-pressed="true">Favorites</button>
+            </div>
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="container p-3 rounded search-box">
+        <div>
+            <h1 class ="text-center"> Events Search </h1>    
+            <hr>
+        </div>
+        <form ngNativeValidate>
+            <div>
+                <label for="keyword" class="form-label"> Keyword </label>
+                <input type="text" matInput [matAutocomplete]="auto" [formControl]="formControl" name="keyword" style = "width: 100%;" required class="form-control" [(ngModel)]="keyword" (input)="onInputChange()">
+                <mat-autocomplete [panelWidth]="400" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
+                [displayWith]="displayWith">
+                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let word of results" [value]="word">
+                    <span><b>{{word}}</b></span>
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+                <br>
+                <div class="row">
+                    <div class="col-lg-6 col-12">
+                        <label for="distance" class = "form-label"> Distance </label>
+                        <input type="number" name="distance" class="form-control" required [(ngModel)]="distance">
+                    </div>
+                    <div class="col-lg-5 col-12">
+                        <label for="category" class="form-label" name=""category> Category </label>
+                        <select class="form-select" name="category" [(ngModel)]="category">
+                            <option value="Default">Default</option>
+                            <option value="Music">Music</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Arts">Arts & Theatre</option>
+                            <option value="Film">Film</option>
+                            <option value="Miscellaneous">Miscellaneous</option>
+                        </select>
+                    </div>
+                
+                </div>
+                <br>
+                <label for="location" class="form-label"> Location </label>
+                <input type="text" name="location" style = "width: 100%;" required class="form-control" [(ngModel)]="location" [disabled] = "isAutoDetect">
+    
+            </div>
+            <br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" value="option1" [checked] = "isAutoDetect" (click)="callIPInfo()">
+                <label class="form-check-label">Auto-detect your location</label>
+            </div>
+            <br>
+            <br>
+            <div class="btn-toolbar container d-flex justify-content-center" role = "toolbar">
+                <div>
+                    <button type="submit" class="btn btn-danger text-white btn-sm mx-3" (click) = "submitForm()">SUBMIT</button>
+                </div>
+                <div>
+                    <button class="btn btn-primary text-white btn-sm" (click)="clearForm()">CLEAR</button>
+                </div>
+            </div>
+            <br>
+            <br>
+        </form>
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="col-sm-10 mx-auto">
+        <div *ngIf="isSubmitted">
+            <table class="table rounded-top table-dark table-striped">
+              <thead>
+                <tr>
+                  <th class="text-center">Data/Time</th>
+                  <th class="text-center">Icon</th>
+                  <th class="text-center">Event</th>
+                  <th class="text-center">Genre</th>
+                  <th class="text-center">Venue</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let event of eventsList; let i = index" (click) = "getEventDetails(event.id)">
+                  <td class="text-center">{{event.localDate}} / {{event.localTime}}</td>
+                  <td class="text-center"><img [src]="event.images[0].url" style="width: 70px; height: 70px;"></td>
+                  <td class="text-center">{{ event.name }}</td>
+                  <td class="text-center">{{ event.classifications[0].genre.name }}</td>
+                  <td class="text-center">{{ event.venue.name }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+    </div>
+
+    <div *ngIf="isEventClicked">
+        <div class="container rounded search-box" style="padding:0px">
+       
+            <button type="button" class="btn btn-transparent text-white btn-lg btn-underline" aria-pressed="true" (click) = "backButtonClicked()">Back</button>
+            <p class ="text-center"> {{eventDetails.name}} </p>   
+              
+            <mat-tab-group mat-align-tabs="center" backgroundColor="accent">
+                <mat-tab label="Events">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 text-center">
+                                <h5>Date</h5><p>{{eventDetails.dates.start.localDate}}</p>
+                                <h5>Date</h5><p>{{eventDetails.dates.start.localDate}}</p>
+                                
+                            </div>
+                            <div class="col-lg-6 col-12 text-center" style="width: 100%;">
+                                <img [src] = "eventDetails.seatmap.staticUrl">
+                            </div>
+                        </div>
+                    </div>
+                </mat-tab>
+                
+                <mat-tab label="Artist">Artist/Teams</mat-tab>
+                <mat-tab label="Venue">Venue</mat-tab>
+            </mat-tab-group>
+            <div class="text-center"> 
+                <p>Share on:
+                <a  href="http://twitter.com/share?text=Check {{eventDetails?.name}} on Ticketmaster.&url={{eventDetails.url}}&hashtags=hashtag1,hashtag2,hashtag3" target="_blank">
+                <i class="fa-brands fa-twitter" style="color: #00b4f0; font-size: 30px; margin-right: 20px; margin-left: 10px;"></i> 
+                </a>  
+
+                <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{eventDetails.url}}&amp;src=sdkpreparse">
+                <i class="fa-brands fa-square-facebook" style="color: #007bff; font-size: 30px;"></i>
+                </a> </p>
+            </div>
+        </div>
+    </div>
+
+</html>
